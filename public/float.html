@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>กำลังลอยกระทง…</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="river">
+    <!-- NOTE: รูปกระทงจาก query string (ตั้งค่าที่ app.js) -->
+    <img id="krathongImg" class="float" alt="krathong">
+  </div>
+  <!-- NOTE: ข้อความชื่อและคำอธิษฐาน -->
+  <h3 id="wishText"></h3>
+  <div class="share">
+    <!-- NOTE: ปุ่มแชร์ ปรับข้อความได้ใน app.js -->
+    <a id="shareLine" class="btn">แชร์ LINE</a>
+    <a id="shareFB"   class="btn">แชร์ Facebook</a>
+  </div>
+  <a class="btn ghost" href="index.html">กลับหน้าแรก</a>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ลอยกระทงออนไลน์</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- NOTE: เปลี่ยนภาพพื้นหลังได้ที่ styles.css -> body::before (ค้นหาคำว่า BACKGROUND IMAGE) -->
+</head>
+<body>
+  <section class="hero">
+    <h1>ลอยกระทงออนไลน์ 2025</h1>
+    <!-- NOTE: แก้หัวข้อและข้อความได้ที่บรรทัดนี้ -->
+    <p>จำนวนกระทงที่ลอยแล้ว: <span id="counter">0</span> กระทง</p>
+    <a class="btn" href="create.html">สร้างกระทง</a>
+  </section>
+
+  <section class="recent">
+
+    <!-- NOTE: จำนวนรายการล่าสุดปรับที่ public/app.js (เรียก recent.php?limit=10) -->
+    <ul id="recentList"></ul>
+  </section>
+
+  <footer class="foot" style="position:fixed;left:0;right:0;bottom:0;width:100%;z-index:1000;padding:8px 12px;background:rgba(94, 160, 208, 0.9);text-align:center;">
+    <small>© 2025 Loy Krathong Online by Ayub</small>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

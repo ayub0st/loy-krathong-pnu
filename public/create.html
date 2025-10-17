@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>สร้างกระทง</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');
+
+  .krathong-head{
+    font-family: 'Sarabun', system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Thai", "Helvetica Neue", Arial, sans-serif;
+    text-align: center;
+    margin: 1rem 0;
+  }
+  .krathong-head .title{
+    display: inline-block;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #b6c6dc; /* dark slate */
+    letter-spacing: 0.25px;
+  }
+  .krathong-head .subtitle{
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #d1dae8; /* muted slate */
+    margin-top: 0.25rem;
+  }
+  </style>
+
+  <div class="krathong-head">
+    <label class="title">มาสร้างกระทงกัน!</label>
+    <span class="subtitle">กรอกชื่อและคำอธิษฐานแล้วลอยไปพร้อมกัน</span>
+  </div>
+  <form id="formKrathong" class="card">
+    <label>ชื่อของคุณ</label>
+    <!-- NOTE: ข้อแนะนำ placeholder/maxlength แก้ไขได้ -->
+    <input id="name" required maxlength="80" placeholder="สมรักษ์">
+
+    <label>คำอธิษฐาน</label>
+    <textarea id="wish" required maxlength="1000" placeholder="ขอให้..."></textarea>
+
+    <label>เลือกกระทง</label>
+    <!-- NOTE: เพิ่ม/ลบตัวเลือกกระทงได้ที่กล่องนี้ เปลี่ยนไฟล์รูปใน public/assets/ -->
+    <div class="designs">
+      <label class="design"><input type="radio" name="design" value="assets/krathong1.svg" checked><img src="assets/krathong1.svg" alt="แบบที่ 1"><span>แบบที่ 1</span></label>
+      <label class="design"><input type="radio" name="design" value="assets/krathong2.svg"><img src="assets/krathong2.svg" alt="แบบที่ 2"><span>แบบที่ 2</span></label>
+      <label class="design"><input type="radio" name="design" value="assets/krathong3.svg"><img src="assets/krathong3.svg" alt="แบบที่ 3"><span>แบบที่ 3</span></label>
+    </div>
+
+    <button class="btn" type="submit">ลอยเลย</button>
+    <a class="btn ghost" href="index.html">กลับหน้าแรก</a>
+  </form>
+
+  <script src="app.js"></script>
+</body>
+</html>
