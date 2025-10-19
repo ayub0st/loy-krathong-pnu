@@ -1,24 +1,259 @@
 <!doctype html>
 <html lang="th">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>กำลังลอยกระทง…</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>กำลังลอยกระทง…</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+/* เพิ่ม style สำหรับหน้านี้โดยเฉพาะ */
+.krathong-float-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.message-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.message-card {
+  max-width: 680px;
+  width: 100%;
+  padding: 32px 24px;
+  background: rgba(0,0,0,.35);
+  backdrop-filter: blur(5px);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.3);
+}
+
+.message-card h2 {
+  font-size: 2rem;
+  margin: 0 0 20px;
+  color: #fff;
+}
+
+.message-card .wish-text {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #fff;
+  background: rgba(255,255,255,.08);
+  padding: 20px;
+  border-radius: 12px;
+  margin: 16px 0;
+}
+
+.message-card .name-highlight {
+  color: #ff9f0a;
+  font-weight: 600;
+}
+
+/* แม่น้ำที่มีกระทงลอย */
+.river-section {
+  height: 280px;
+  background: linear-gradient(180deg, rgba(42,139,142,0.7) 0%, rgba(33,104,107,0.8) 100%);
+  position: relative;
+  overflow: hidden;
+  border-top: 2px solid rgba(255,255,255,0.1);
+}
+
+/* กระทงแต่ละลูก */
+.floating-krathong {
+  position: absolute;
+  bottom: 50%;
+  transform: translateY(50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: floatAnimation 25s linear infinite;
+}
+
+.floating-krathong img {
+  width: 140px;
+  height: auto;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+}
+
+.floating-krathong .owner-name {
+  position: absolute;
+  top: -36px;
+  background: rgba(255,159,10,0.95);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+@keyframes floatAnimation {
+  0% { 
+    left: -200px;
+    transform: translateY(50%) rotate(-2deg);
+  }
+  25% {
+    transform: translateY(45%) rotate(1deg);
+  }
+  50% {
+    transform: translateY(55%) rotate(-1deg);
+  }
+  75% {
+    transform: translateY(48%) rotate(2deg);
+  }
+  100% { 
+    left: calc(100% + 200px);
+    transform: translateY(50%) rotate(-2deg);
+  }
+}
+
+/* ปุ่มด้านล่าง */
+.action-buttons {
+  padding: 24px 16px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  background: rgba(0,0,0,0.15);
+}
+
+@media (max-width: 640px) {
+  .message-card h2 { font-size: 1.5rem; }
+  .message-card .wish-text { font-size: 1rem; }
+  .floating-krathong img { width: 110px; }
+  .river-section { height: 220px; }
+}
+</style>
 </head>
-<body>
-  <div class="river">
-    <!-- NOTE: รูปกระทงจาก query string (ตั้งค่าที่ app.js) -->
-    <img id="krathongImg" class="float" alt="krathong">
+<body class="krathong-float-page">
+
+<!-- ส่วนแสดงข้อความอธิษฐาน -->
+<div class="message-section">
+  <div class="message-card">
+    <h2>🪔 ขอบคุณที่ลอยกระทง</h2>
+    <div class="wish-text" id="wishDisplay">
+      กำลังโหลด...
+    </div>
+    <p style="margin-top:20px; opacity:0.8; font-size:0.95rem;">
+      กระทงของคุณกำลังลอยไปพร้อมกับความปรารถนาดีๆ
+    </p>
   </div>
-  <!-- NOTE: ข้อความชื่อและคำอธิษฐาน -->
-  <h3 id="wishText"></h3>
-  <div class="share">
-    <!-- NOTE: ปุ่มแชร์ ปรับข้อความได้ใน app.js -->
-    <a id="shareLine" class="btn">แชร์ LINE</a>
-    <a id="shareFB"   class="btn">แชร์ Facebook</a>
-  </div>
+</div>
+
+<!-- แม่น้ำที่มีกระทงลอย -->
+<div class="river-section" id="riverArea">
+  <!-- กระทงจะถูกสร้างที่นี่ -->
+</div>
+
+<!-- ปุ่มแชร์และกลับ -->
+<div class="action-buttons">
+  <a id="shareLine" class="btn">แชร์ LINE</a>
+  <a id="shareFB" class="btn">แชร์ Facebook</a>
   <a class="btn ghost" href="index.html">กลับหน้าแรก</a>
-  <script src="app.js"></script>
+</div>
+
+<script>
+const API = "api";
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, m => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":"&#39;"
+  }[m]));
+}
+
+// โหลดกระทงล่าสุดจากฐานข้อมูล
+async function loadRecentKrathongs() {
+  try {
+    const res = await fetch(`${API}/recent.php?limit=20`, {cache:'no-store'});
+    const data = await res.json();
+    return data.items || [];
+  } catch(e) {
+    console.error('Error loading krathongs:', e);
+    return [];
+  }
+}
+
+// สร้างกระทงลอยในแม่น้ำ
+function createFloatingKrathongs(krathongs) {
+  const river = document.getElementById('riverArea');
+  
+  if (krathongs.length === 0) return;
+  
+  krathongs.forEach((k, idx) => {
+    const div = document.createElement('div');
+    div.className = 'floating-krathong';
+    
+    // กระจายตำแหน่งเริ่มต้น
+    const startOffset = -300 - (idx * 180);
+    div.style.left = startOffset + 'px';
+    div.style.animationDelay = `${idx * 2}s`;
+    
+    // เลือกรูปกระทง
+    const designPath = k.design || 'assets/krathong1.svg';
+    
+    div.innerHTML = `
+      <span class="owner-name">${esc(k.name)}</span>
+      <img src="${esc(designPath)}" alt="krathong">
+    `;
+    
+    river.appendChild(div);
+  });
+}
+
+// ตั้งค่าปุ่มแชร์
+function setupShare(name, wish) {
+  const url = location.href.split('?')[0];
+  const text = `${name} ลอยกระทงออนไลน์: ${wish}`;
+  
+  const lineBtn = document.getElementById('shareLine');
+  const fbBtn = document.getElementById('shareFB');
+  
+  if (lineBtn) {
+    lineBtn.href = `https://line.me/R/msg/text/?${encodeURIComponent(text + ' ' + url)}`;
+  }
+  if (fbBtn) {
+    fbBtn.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+  }
+}
+
+// เริ่มต้น
+document.addEventListener('DOMContentLoaded', async () => {
+  // ดึงข้อมูลจาก URL
+  const params = new URLSearchParams(location.search);
+  const userName = params.get('name') || 'ผู้ลอยกระทง';
+  const userWish = params.get('wish') || 'ขอให้ทุกคนมีความสุข';
+  const userDesign = params.get('design') || 'assets/krathong1.svg';
+  
+  // แสดงข้อความ
+  document.getElementById('wishDisplay').innerHTML = `
+    <span class="name-highlight">${esc(userName)}</span> อธิษฐานว่า<br>
+    "${esc(userWish)}"
+  `;
+  
+  // ตั้งค่าปุ่มแชร์
+  setupShare(userName, userWish);
+  
+  // โหลดกระทงทั้งหมด
+  const allKrathongs = await loadRecentKrathongs();
+  
+  // ถ้ามีข้อมูล ให้แสดงทั้งหมด
+  if (allKrathongs.length > 0) {
+    createFloatingKrathongs(allKrathongs);
+  } else {
+    // ถ้าไม่มี ให้แสดงแค่ของคนปัจจุบัน
+    createFloatingKrathongs([{
+      name: userName,
+      wish: userWish,
+      design: userDesign
+    }]);
+  }
+});
+</script>
+
 </body>
 </html>

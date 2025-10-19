@@ -1,60 +1,296 @@
 <!doctype html>
 <html lang="th">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>สร้างกระทง</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>สร้างกระทง</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+/* Responsive improvements */
+.krathong-head {
+  padding: 20px;
+  text-align: center;
+}
+
+.krathong-head h1 {
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
+  margin: 10px 0;
+}
+
+.krathong-head .subtitle {
+  font-size: clamp(0.9rem, 3vw, 1.1rem);
+  opacity: 0.9;
+}
+
+.card {
+  max-width: 680px;
+  margin: 20px auto;
+  padding: clamp(16px, 4vw, 24px);
+}
+
+.card label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+}
+
+.card input,
+.card textarea {
+  width: 100%;
+  padding: clamp(10px, 2.5vw, 14px);
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+}
+
+.card textarea {
+  min-height: clamp(100px, 20vh, 140px);
+}
+
+.designs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: clamp(10px, 2vw, 14px);
+  margin: 12px 0;
+}
+
+.design {
+  padding: clamp(8px, 2vw, 12px);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.design:hover {
+  background: rgba(255,255,255,0.1);
+  transform: scale(1.05);
+}
+
+.design img {
+  width: 100%;
+  max-width: 120px;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+}
+
+.design input[type="radio"] {
+  width: auto;
+  margin: 8px auto 0;
+  cursor: pointer;
+}
+
+.design label {
+  font-size: clamp(0.85rem, 2vw, 0.95rem);
+  text-align: center;
+  display: block;
+  margin-top: 6px;
+  cursor: pointer;
+}
+
+.btn {
+  width: 100%;
+  max-width: 100%;
+  padding: clamp(12px, 3vw, 16px);
+  font-size: clamp(1rem, 2.5vw, 1.1rem);
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+@media (max-width: 480px) {
+  .designs {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .design img {
+    max-width: 90px;
+  }
+}
+
+/* Loading state */
+.btn.loading {
+  opacity: 0.7;
+  pointer-events: none;
+  position: relative;
+}
+
+.btn.loading::after {
+  content: "กำลังส่ง...";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: inherit;
+}
+</style>
 </head>
 <body>
-  <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');
 
-  .krathong-head{
-    font-family: 'Sarabun', system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Thai", "Helvetica Neue", Arial, sans-serif;
-    text-align: center;
-    margin: 1rem 0;
-  }
-  .krathong-head .title{
-    display: inline-block;
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: #b6c6dc; /* dark slate */
-    letter-spacing: 0.25px;
-  }
-  .krathong-head .subtitle{
-    display: block;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #d1dae8; /* muted slate */
-    margin-top: 0.25rem;
-  }
-  </style>
+<div class="krathong-head">
+  <h1>🪔 มาลอยกระทงกัน!</h1>
+  <p class="subtitle">กรอกชื่อและคำอธิษฐานแล้วลอยไปพร้อมกัน</p>
+</div>
 
-  <div class="krathong-head">
-    <label class="title">มาสร้างกระทงกัน!</label>
-    <span class="subtitle">กรอกชื่อและคำอธิษฐานแล้วลอยไปพร้อมกัน</span>
-  </div>
-  <form id="formKrathong" class="card">
-    <label>ชื่อของคุณ</label>
-    <!-- NOTE: ข้อแนะนำ placeholder/maxlength แก้ไขได้ -->
-    <input id="name" required maxlength="80" placeholder="สมรักษ์">
-
-    <label>คำอธิษฐาน</label>
-    <textarea id="wish" required maxlength="1000" placeholder="ขอให้..."></textarea>
-
-    <label>เลือกกระทง</label>
-    <!-- NOTE: เพิ่ม/ลบตัวเลือกกระทงได้ที่กล่องนี้ เปลี่ยนไฟล์รูปใน public/assets/ -->
-    <div class="designs">
-      <label class="design"><input type="radio" name="design" value="assets/krathong1.svg" checked><img src="assets/krathong1.svg" alt="แบบที่ 1"><span>แบบที่ 1</span></label>
-      <label class="design"><input type="radio" name="design" value="assets/krathong2.svg"><img src="assets/krathong2.svg" alt="แบบที่ 2"><span>แบบที่ 2</span></label>
-      <label class="design"><input type="radio" name="design" value="assets/krathong3.svg"><img src="assets/krathong3.svg" alt="แบบที่ 3"><span>แบบที่ 3</span></label>
+<form id="formKrathong" class="card">
+  <label for="name">ชื่อของคุณ</label>
+  <input 
+    type="text" 
+    id="name" 
+    name="name" 
+    placeholder="ชื่อของคุณ" 
+    required 
+    maxlength="80"
+    autocomplete="name"
+  >
+  
+  <label for="wish" style="margin-top: 16px;">คำอธิษฐาน</label>
+  <textarea 
+    id="wish" 
+    name="wish" 
+    placeholder="ขอให้..." 
+    required 
+    maxlength="1000"
+  ></textarea>
+  
+  <label style="margin-top: 16px;">เลือกกระทง</label>
+  <div class="designs">
+    <div class="design">
+      <input 
+        type="radio" 
+        name="design" 
+        id="design1" 
+        value="assets/krathong1.svg" 
+        checked
+      >
+      <label for="design1">
+        <img src="assets/krathong1.svg" alt="แบบที่ 1">
+        แบบที่ 1
+      </label>
     </div>
+    
+    <div class="design">
+      <input 
+        type="radio" 
+        name="design" 
+        id="design2" 
+        value="assets/krathong2.svg"
+      >
+      <label for="design2">
+        <img src="assets/krathong2.svg" alt="แบบที่ 2">
+        แบบที่ 2
+      </label>
+    </div>
+    
+    <div class="design">
+      <input 
+        type="radio" 
+        name="design" 
+        id="design3" 
+        value="assets/krathong3.svg"
+      >
+      <label for="design3">
+        <img src="assets/krathong3.svg" alt="แบบที่ 3">
+        แบบที่ 3
+      </label>
+    </div>
+  </div>
+  
+  <button type="submit" class="btn" id="submitBtn">ลอยเลย</button>
+  <a class="btn ghost" href="index.html">กลับหน้าแรก</a>
+</form>
 
-    <button class="btn" type="submit">ลอยเลย</button>
-    <a class="btn ghost" href="index.html">กลับหน้าแรก</a>
-  </form>
+<script>
+const API = "api";
 
-  <script src="app.js"></script>
+async function postJSON(url, data) {
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(data)
+  });
+  
+  if (!r.ok) {
+    const text = await r.text().catch(() => '');
+    throw new Error(`HTTP ${r.status}: ${text}`);
+  }
+  
+  return r.json();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('formKrathong');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  // ทำให้คลิกที่การ์ดกระทงแล้วเลือก radio ได้
+  document.querySelectorAll('.design label').forEach(label => {
+    label.addEventListener('click', (e) => {
+      const radioId = label.getAttribute('for');
+      if (radioId) {
+        document.getElementById(radioId).checked = true;
+      }
+    });
+  });
+  
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const name = document.getElementById('name').value.trim();
+    const wish = document.getElementById('wish').value.trim();
+    const design = document.querySelector('input[name=design]:checked').value;
+    
+    // Validate
+    if (!name || !wish) {
+      alert('❌ กรุณากรอกชื่อและคำอธิษฐาน');
+      return;
+    }
+    
+    if (name.length > 80) {
+      alert('❌ ชื่อยาวเกินไป (สูงสุด 80 ตัวอักษร)');
+      return;
+    }
+    
+    if (wish.length > 1000) {
+      alert('❌ คำอธิษฐานยาวเกินไป (สูงสุด 1000 ตัวอักษร)');
+      return;
+    }
+    
+    // แสดง loading
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
+    
+    try {
+      const res = await postJSON(`${API}/submit.php`, {name, wish, design});
+      
+      if (!res.ok) {
+        throw new Error(res.error || 'UNKNOWN_ERROR');
+      }
+      
+      // สำเร็จ - ไปหน้าลอยกระทง
+      const params = new URLSearchParams({name, wish, design});
+      location.href = `float.html?${params.toString()}`;
+      
+    } catch(e) {
+      submitBtn.classList.remove('loading');
+      submitBtn.disabled = false;
+      
+      let errorMsg = '❌ ส่งข้อมูลไม่สำเร็จ\n';
+      
+      if (e.message.includes('RATE_LIMIT')) {
+        errorMsg += 'คุณลอยกระทงบ่อยเกินไป กรุณารอสักครู่';
+      } else if (e.message.includes('405')) {
+        errorMsg += 'ระบบไม่รองรับการส่งข้อมูล\nกรุณาตรวจสอบ API';
+      } else if (e.message.includes('Failed to fetch')) {
+        errorMsg += 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์\nกรุณาตรวจสอบการเชื่อมต่อ';
+      } else {
+        errorMsg += e.message;
+      }
+      
+      alert(errorMsg);
+    }
+  });
+});
+</script>
+
 </body>
 </html>

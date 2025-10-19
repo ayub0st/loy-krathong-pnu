@@ -1,30 +1,182 @@
 <!doctype html>
 <html lang="th">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>ลอยกระทงออนไลน์</title>
-  <link rel="stylesheet" href="styles.css">
-  <!-- NOTE: เปลี่ยนภาพพื้นหลังได้ที่ styles.css -> body::before (ค้นหาคำว่า BACKGROUND IMAGE) -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>มนร.ชวนลอยกระทงออนไลน์</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 1.8rem; padding: 0 20px; }
+  .hero p { font-size: 1rem; }
+  #counter { font-size: 2rem; }
+  .recent { padding: 0 12px; }
+}
+
+/* แม่น้ำที่มีกระทงลอย */
+.river-banner {
+  height: 200px;
+  background: linear-gradient(180deg, rgba(42,139,142,0.7) 0%, rgba(33,104,107,0.8) 100%);
+  position: relative;
+  overflow: hidden;
+  margin: 20px 0;
+  border-top: 2px solid rgba(255,255,255,0.1);
+  border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+
+.floating-krathong {
+  position: absolute;
+  bottom: 50%;
+  transform: translateY(50%);
+  animation: floatAcross 22s linear infinite;
+}
+
+.floating-krathong img {
+  width: 100px;
+  height: auto;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+}
+
+.floating-krathong .name-tag {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255,159,10,0.95);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+@keyframes floatAcross {
+  0% { 
+    left: -150px;
+    transform: translateY(50%) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(45%) rotate(1deg);
+  }
+  100% { 
+    left: calc(100% + 150px);
+    transform: translateY(50%) rotate(-1deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .river-banner { height: 160px; }
+  .floating-krathong img { width: 80px; }
+  .floating-krathong .name-tag { font-size: 0.7rem; padding: 3px 10px; }
+}
+</style>
 </head>
 <body>
-  <section class="hero">
-    <h1>ลอยกระทงออนไลน์ 2025</h1>
-    <!-- NOTE: แก้หัวข้อและข้อความได้ที่บรรทัดนี้ -->
-    <p>จำนวนกระทงที่ลอยแล้ว: <span id="counter">0</span> กระทง</p>
-    <a class="btn" href="create.html">สร้างกระทง</a>
-  </section>
+<section class="hero">
+  <h1>🪔 มนร.ชวนลอยกระทงออนไลน์ 2025</h1>
+  <p style="font-size: 1.1rem; margin: 10px 0;">จำนวนกระทงที่ลอยแล้ว</p>
+  <p style="font-size: 2.5rem; font-weight: bold; margin: 5px 0;">
+    <span id="counter">0</span> กระทง
+  </p>
+  <a class="btn" href="create.html" style="margin-top: 20px; font-size: 1.1rem; padding: 14px 32px;">
+    ✨ ลอยกระทง
+  </a>
+</section>
 
-  <section class="recent">
+<!-- แม่น้ำที่มีกระทงลอย -->
+<div class="river-banner" id="riverBanner"></div>
 
-    <!-- NOTE: จำนวนรายการล่าสุดปรับที่ public/app.js (เรียก recent.php?limit=10) -->
-    <ul id="recentList"></ul>
-  </section>
+<section class="recent">
+  <h2 style="text-align: center; margin-bottom: 20px;">📜 กระทงล่าสุด</h2>
+  <ul id="recentList" style="max-width: 800px; margin: 0 auto;"></ul>
+</section>
 
-  <footer class="foot" style="position:fixed;left:0;right:0;bottom:0;width:100%;z-index:1000;padding:8px 12px;background:rgba(94, 160, 208, 0.9);text-align:center;">
-    <small>© 2025 Loy Krathong Online by Ayub</small>
-  </footer>
+<footer class="foot">
+  <small>© 2025 Loy Krathong Online by Ayub</small>
+</footer>
 
-  <script src="app.js"></script>
+<script>
+const API = "api";
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, m => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":"&#39;"
+  }[m]));
+}
+
+async function getJSON(url) {
+  const r = await fetch(url, {cache:'no-store'});
+  if (!r.ok) throw new Error('HTTP '+r.status);
+  return r.json();
+}
+
+// สร้างกระทงลอย
+function createFloatingKrathongs(krathongs) {
+  const river = document.getElementById('riverBanner');
+  if (!river || krathongs.length === 0) return;
+  
+  // แสดงแค่ 8 ลูกเพื่อไม่ให้หน้าช้า
+  const display = krathongs.slice(0, 8);
+  
+  display.forEach((k, idx) => {
+    const div = document.createElement('div');
+    div.className = 'floating-krathong';
+    div.style.left = `${-180 - (idx * 200)}px`;
+    div.style.animationDelay = `${idx * 2.5}s`;
+    
+    const designPath = k.design || 'assets/krathong1.svg';
+    
+    div.innerHTML = `
+      <span class="name-tag">${esc(k.name)}</span>
+      <img src="${esc(designPath)}" alt="krathong">
+    `;
+    
+    river.appendChild(div);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  // โหลดสถิติ
+  const counterEl = document.getElementById('counter');
+  if (counterEl) {
+    try {
+      const stats = await getJSON(`${API}/stats.php`);
+      counterEl.textContent = stats.total ?? 0;
+    } catch(e) { 
+      counterEl.textContent = '—'; 
+    }
+  }
+  
+  // โหลดรายการล่าสุด
+  try {
+    const recent = await getJSON(`${API}/recent.php?limit=15`);
+    const ul = document.getElementById('recentList');
+    
+    if (recent.items && recent.items.length > 0) {
+      // แสดงในรายการ
+      recent.items.forEach(it => {
+        const li = document.createElement('li');
+        const date = new Date(it.created_at);
+        li.innerHTML = `
+          <strong style="color: #ff9f0a;">${esc(it.name)}</strong> — 
+          ${esc(it.wish)} 
+          <small style="opacity: 0.7;">(${date.toLocaleDateString('th-TH')} ${date.toLocaleTimeString('th-TH', {hour: '2-digit', minute: '2-digit'})})</small>
+        `;
+        ul.appendChild(li);
+      });
+      
+      // สร้างกระทงลอย
+      createFloatingKrathongs(recent.items);
+    } else {
+      ul.innerHTML = '<li style="text-align: center; opacity: 0.7;">ยังไม่มีกระทง เป็นคนแรกที่ลอยกระทงสิ! 🪔</li>';
+    }
+  } catch(e) {
+    console.error('Error loading recent:', e);
+  }
+});
+</script>
 </body>
 </html>
