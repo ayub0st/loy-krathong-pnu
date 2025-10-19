@@ -16,13 +16,11 @@
 
 /* แม่น้ำที่มีกระทงลอย */
 .river-banner {
-  height: 200px;
-  background: linear-gradient(180deg, rgba(42,139,142,0.7) 0%, rgba(33,104,107,0.8) 100%);
-  position: relative;
-  overflow: hidden;
-  margin: 20px 0;
-  border-top: 2px solid rgba(255,255,255,0.1);
-  border-bottom: 2px solid rgba(255,255,255,0.1);
+  height: 280px;
+  background: rgba(0,0,0,.35);
+  backdrop-filter: blur(5px);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.3);
 }
 
 .floating-krathong {
@@ -178,5 +176,74 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 </script>
+<audio id="bgMusic"
+       autoplay
+       loop
+       muted
+       preload="auto"
+       playsinline>
+  <source src="assets/loykrathong.mp3" type="audio/mpeg">
+</audio>
+
+<button id="soundToggle" class="sound-btn">🔊 เปิดเสียง</button>
+
+<script>
+(function(){
+  const audio = document.getElementById('bgMusic');
+  const btn = document.getElementById('soundToggle');
+
+  // อ่านสถานะจาก localStorage
+  const state = localStorage.getItem('music_state') || 'muted';
+  audio.muted = (state === 'muted');
+  btn.textContent = audio.muted ? '🔊 เปิดเสียง' : '🔇 ปิดเสียง';
+
+  // พยายามเล่นอัตโนมัติ (บางเบราว์เซอร์ต้องรอ gesture)
+  audio.play().catch(()=>{});
+
+  // กดปุ่มเปิด/ปิดเสียง
+  btn.addEventListener('click', async () => {
+    try {
+      if (audio.paused) await audio.play(); // เผื่อโดน policy
+      audio.muted = !audio.muted;
+      localStorage.setItem('music_state', audio.muted ? 'muted' : 'unmuted');
+      btn.textContent = audio.muted ? '🔊 เปิดเสียง' : '🔇 ปิดเสียง';
+    } catch {
+      alert('เบราว์เซอร์ยังไม่อนุญาตให้เล่นเสียง โปรดกดอีกครั้ง');
+    }
+  });
+
+  // เมื่อผู้ใช้คลิกที่ใดในหน้า ให้ลองเปิดเสียงอัตโนมัติถ้าเคย unmuted
+  window.addEventListener('click', async function once(){
+    if (localStorage.getItem('music_state') === 'unmuted') {
+      try { await audio.play(); audio.muted = false; } catch{}
+      btn.textContent = '🔇 ปิดเสียง';
+    }
+    window.removeEventListener('click', once);
+  }, {once:true});
+})();
+</script>
+
+<style>
+.sound-btn {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 9999;
+  background: rgba(255,159,10,0.95);
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+  transition: all .25s ease;
+}
+.sound-btn:hover {
+  background: rgba(255,159,10,0.95);
+  transform: scale(1.05);
+}
+</style>
 </body>
 </html>
