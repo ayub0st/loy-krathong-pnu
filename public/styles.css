@@ -14,7 +14,7 @@ body{
 body::before{
   content:"";
   position:fixed; inset:0;
-  background: url('assets/bg.jpg') center/cover no-repeat;
+  background: url('assets/bg.png') center/cover no-repeat;
   filter: brightness(0.85);
   z-index:-1;
 }

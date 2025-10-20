@@ -264,8 +264,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }]);
   }
 });
-</script>
-<audio id="bgMusic"
+</script><audio id="bgMusic"
        autoplay
        loop
        muted
@@ -284,28 +283,43 @@ document.addEventListener('DOMContentLoaded', async () => {
   // อ่านสถานะจาก localStorage
   const state = localStorage.getItem('music_state') || 'muted';
   audio.muted = (state === 'muted');
-  btn.textContent = audio.muted ? '🔊 เปิดเสียง' : '🔇 ปิดเสียง';
+  
+  // ฟังก์ชันอัพเดทปุ่ม
+  function updateButton() {
+    if (audio.muted) {
+      btn.textContent = '🔊 เปิดเสียง';
+      btn.classList.remove('playing');
+    } else {
+      btn.textContent = '🔇 ปิดเสียง';
+      btn.classList.add('playing');
+    }
+  }
+  
+  updateButton();
 
-  // พยายามเล่นอัตโนมัติ (บางเบราว์เซอร์ต้องรอ gesture)
+  // พยายามเล่นอัตโนมัติ
   audio.play().catch(()=>{});
 
   // กดปุ่มเปิด/ปิดเสียง
   btn.addEventListener('click', async () => {
     try {
-      if (audio.paused) await audio.play(); // เผื่อโดน policy
+      if (audio.paused) await audio.play();
       audio.muted = !audio.muted;
       localStorage.setItem('music_state', audio.muted ? 'muted' : 'unmuted');
-      btn.textContent = audio.muted ? '🔊 เปิดเสียง' : '🔇 ปิดเสียง';
+      updateButton();
     } catch {
       alert('เบราว์เซอร์ยังไม่อนุญาตให้เล่นเสียง โปรดกดอีกครั้ง');
     }
   });
 
-  // เมื่อผู้ใช้คลิกที่ใดในหน้า ให้ลองเปิดเสียงอัตโนมัติถ้าเคย unmuted
+  // เมื่อผู้ใช้คลิกที่ใดในหน้า ให้ลองเปิดเสียงอัตโนมัติ
   window.addEventListener('click', async function once(){
     if (localStorage.getItem('music_state') === 'unmuted') {
-      try { await audio.play(); audio.muted = false; } catch{}
-      btn.textContent = '🔇 ปิดเสียง';
+      try { 
+        await audio.play(); 
+        audio.muted = false; 
+        updateButton();
+      } catch{}
     }
     window.removeEventListener('click', once);
   }, {once:true});
@@ -313,26 +327,75 @@ document.addEventListener('DOMContentLoaded', async () => {
 </script>
 
 <style>
+/* ===== ปุ่มเสียง (ปรับปรุง) ===== */
 .sound-btn {
   position: fixed;
-  right: 16px;
-  bottom: 16px;
+  right: 20px;
+  bottom: 20px;
   z-index: 9999;
-  background: rgba(255,159,10,0.95);
+  background: linear-gradient(135deg, #ff9f0a 0%, #ff6b00 100%);
   color: #fff;
-  border: none;
-  border-radius: 25px;
-  padding: 10px 18px;
-  font-size: 1rem;
-  font-weight: 600;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-radius: 50px;
+  padding: 14px 24px;
+  font-size: 1.1rem;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.25);
-  transition: all .25s ease;
+  box-shadow: 
+    0 4px 15px rgba(255,159,10,0.4),
+    0 0 20px rgba(255,159,10,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: pulse 2s ease-in-out infinite;
 }
+
 .sound-btn:hover {
-  background: rgba(255,159,10,0.95);
-  transform: scale(1.05);
+  background: linear-gradient(135deg, #ff8800 0%, #ff5500 100%);
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 
+    0 6px 25px rgba(255,159,10,0.6),
+    0 0 30px rgba(255,159,10,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+  border-color: rgba(255,255,255,0.5);
 }
+
+.sound-btn:active {
+  transform: scale(1.05) translateY(0);
+  box-shadow: 0 2px 10px rgba(255,159,10,0.3);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 
+      0 4px 15px rgba(255,159,10,0.4),
+      0 0 20px rgba(255,159,10,0.2),
+      inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  50% {
+    box-shadow: 
+      0 4px 20px rgba(255,159,10,0.6),
+      0 0 30px rgba(255,159,10,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+}
+
+.sound-btn.playing {
+  animation: none;
+  background: linear-gradient(135deg, #00d4aa 0%, #00a884 100%);
+  box-shadow: 
+    0 4px 15px rgba(0,212,170,0.4),
+    0 0 20px rgba(0,212,170,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.sound-btn.playing:hover {
+  background: linear-gradient(135deg, #00c49a 0%, #009874 100%);
+  box-shadow: 
+    0 6px 25px rgba(0,212,170,0.6),
+    0 0 30px rgba(0,212,170,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
 </style>
 </body>
 </html>
