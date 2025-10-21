@@ -74,12 +74,16 @@
 </head>
 <body>
 <section class="hero">
-  <h1>🪔 มนร.ชวนลอยกระทงออนไลน์ 2025</h1>
-  <p style="font-size: 1.1rem; margin: 10px 0;">จำนวนกระทงที่ลอยแล้ว</p>
-  <p style="font-size: 2.5rem; font-weight: bold; margin: 5px 0;">
+  <p style="font-size: 1.2rem; margin-bottom: 8px;"> </p>
+  <h1> 🪔  มนร.ชวนลอยกระทงออนไลน์ 2025</h1>
+  <p style="font-size: 1.5rem; margin: 2px 0;">จำนวนกระทงที่ลอยแล้ว</p>
+  <p style="font-size: 2.5rem; font-weight: bold; margin: 12px 0;">
     <span id="counter">0</span> กระทง
   </p>
-  <a class="btn" href="create.html" style="margin-top: 20px; font-size: 1.1rem; padding: 14px 32px;">
+  <p style="font-size: 1.2rem; margin-bottom: 0px;">
+  </p>
+
+  <a class="btn" href="create.html" style="margin-top: 0px; font-size: 1.5rem; padding: 14px 32px;">
     ✨ ลอยกระทง
   </a>
 </section>
@@ -88,7 +92,7 @@
 <div class="river-banner" id="riverBanner"></div>
 
 <section class="recent">
-  <h2 style="text-align: center; margin-bottom: 20px;">📜 กระทงล่าสุด</h2>
+  <h2 style="text-align: center; margin-bottom: 10px;">📜 กระทงล่าสุด</h2>
   <ul id="recentList" style="max-width: 800px; margin: 0 auto;"></ul>
 </section>
 
@@ -199,10 +203,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ฟังก์ชันอัพเดทปุ่ม
   function updateButton() {
     if (audio.muted) {
-      btn.textContent = '🔊 เปิดเสียง';
+      btn.textContent = '🔇 ปิดเสียง';
       btn.classList.remove('playing');
     } else {
-      btn.textContent = '🔇 ปิดเสียง';
+      btn.textContent = '🔊 เปิดเสียง';
       btn.classList.add('playing');
     }
   }
